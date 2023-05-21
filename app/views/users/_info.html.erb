@@ -20,6 +20,11 @@
     <th>
       <%= render "relationships/follow_btn", user: user %>
     </th>
+    <th>
+      <% if current_user != @user %>
+        <%= link_to 'chatを始める', chat_path(user) %>
+      <% end %>
+    </th>
   </tr>
 </table>
 
