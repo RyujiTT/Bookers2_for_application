@@ -3,18 +3,18 @@ class BooksController < ApplicationController
   before_action :ensure_correct_user, only: [:edit, :update, :destroy]
 
   def show
+    @user = User.find_by(@user_id)
+    if @user
+      @books = Book.all
+    else
+      @books = Book.all
+      User.create(@user_id)
+    end
     @book = Book.find(params[:id])
     @book_comment = BookComment.new
   end
 
   def index
-    @see = See.find_by(ip: request.remote_ip)
-    if @see
-      @books = Book.all
-    else
-      @books = Book.all
-      See.create(ip: request.remote_ip)
-    end 
     to  = Time.current.at_end_of_day
     from  = (to - 6.day).at_beginning_of_day
     @books = Book.all.sort {|a,b|
