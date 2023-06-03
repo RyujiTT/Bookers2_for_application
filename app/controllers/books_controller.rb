@@ -1,16 +1,14 @@
+# frozen_string_literal: true
+
 class BooksController < ApplicationController
   before_action :authenticate_user!
   before_action :ensure_correct_user, only: [:edit, :update, :destroy]
 
   def show
-    @user = User.find_by(@user_id)
-    if @user
-      @books = Book.all
-    else
-      @books = Book.all
-      User.create(@user_id)
-    end
     @book = Book.find(params[:id])
+    unless See.find_by(user_id: current_user.id, book_id: @book.id)
+      current_user.sees.create(book_id: @book.id)
+    end
     @book_comment = BookComment.new
   end
 
@@ -31,7 +29,7 @@ class BooksController < ApplicationController
       redirect_to book_path(@book), notice: "You have created book successfully."
     else
       @books = Book.all
-      render 'index'
+      render "index"
     end
   end
 
@@ -52,15 +50,14 @@ class BooksController < ApplicationController
   end
 
   private
-
-  def book_params
-    params.require(:book).permit(:title, :body)
-  end
-
-  def ensure_correct_user
-    @book = Book.find(params[:id])
-    unless @book.user == current_user
-      redirect_to books_path
+    def book_params
+      params.require(:book).permit(:title, :body)
     end
-  end
+
+    def ensure_correct_user
+      @book = Book.find(params[:id])
+      unless @book.user == current_user
+        redirect_to books_path
+      end
+    end
 end

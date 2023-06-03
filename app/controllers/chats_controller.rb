@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class ChatsController < ApplicationController
    before_action :reject_non_related, only: [:show]
   def show

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class User < ApplicationRecord
   # Include default devise modules. Others available are:
   # :confirmable, :lockable, :timeoutable, :trackable and :omniauthable
@@ -21,6 +23,8 @@ class User < ApplicationRecord
   has_many :chats, dependent: :destroy
   has_many :rooms, through: :user_rooms
 
+  has_many :sees, dependent: :destroy
+
 
 
   def follow(user_id)
@@ -37,18 +41,24 @@ class User < ApplicationRecord
 
 
   def get_profile_image
-    (profile_image.attached?) ? profile_image : 'no_image.jpg'
+    (profile_image.attached?) ? profile_image : "no_image.jpg"
   end
 
   def self.search_for(content, method)
-    if method == 'perfect'
+    if method == "perfect"
       User.where(name: content)
-    elsif method == 'forward'
-      User.where('name LIKE ?', content + '%')
-    elsif method == 'backward'
-      User.where('name LIKE ?', '%' + content)
+    elsif method == "forward"
+      User.where("name LIKE ?", content + "%")
+    elsif method == "backward"
+      User.where("name LIKE ?", "%" + content)
     else
-      User.where('name LIKE ?', '%' + content + '%')
+      User.where("name LIKE ?", "%" + content + "%")
+    end
+  end
+  
+  def self.guest
+    find_or_create_by!(name: "guestuser" ,email: "guest@example.com") do |user|
+      user.password = SecureRandom.urlsafe_base64
     end
   end
 end

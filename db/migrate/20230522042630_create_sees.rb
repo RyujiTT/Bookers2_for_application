@@ -1,7 +1,10 @@
+# frozen_string_literal: true
+
 class CreateSees < ActiveRecord::Migration[6.1]
   def change
     create_table :sees do |t|
-      t.string :ip
+      t.integer :user_id
+      t.integer :book_id
 
       t.timestamps
     end
